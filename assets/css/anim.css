@@ -279,3 +279,55 @@ body.xx-calm #bg-canvas, body.xx-calm #fx-canvas { display: none !important; }
 body.xx-calm #fx { background: transparent !important; }
 body.xx-calm .tap-ripple { display: none !important; }
 
+/* ══════════ 角色過場：七種內建「起手式」══════════
+   對應 config.js → characters[].fx：petals / talisman / sword / flame /
+   lightning / sound / ink。作者之後上傳雲端角色影片，就會改用影片播放，
+   這層內建動畫自動退到備援（详见 README 第 3 節）。                  */
+#fx.fx-petals::after, #fx.fx-talisman::after, #fx.fx-sword::after, #fx.fx-flame::after,
+#fx.fx-lightning::after, #fx.fx-sound::after, #fx.fx-ink::after {
+  content: ""; position: fixed; left: 50%; top: 50%;
+  width: 170vmax; height: 170vmax; pointer-events: none; opacity: 0; z-index: 0;
+}
+#fx .fx-center { z-index: 3; }
+#fx.fx-petals::after {
+  background: radial-gradient(closest-side, rgba(255, 158, 196, .34), rgba(255, 217, 230, .10) 45%, transparent 65%);
+  animation: fxBloom 1600ms cubic-bezier(.2, .7, .2, 1) both;
+}
+#fx.fx-talisman::after {
+  background: conic-gradient(from 0deg, transparent 0 10%, rgba(230, 194, 107, .34) 13%, transparent 26%,
+    transparent 58%, rgba(230, 194, 107, .24) 62%, transparent 76%);
+  animation: fxSpin 2000ms linear both;
+}
+#fx.fx-sword::after {
+  background: linear-gradient(112deg, transparent 41%, rgba(127, 196, 255, .10) 45%, rgba(223, 240, 255, .55) 50%,
+    rgba(127, 196, 255, .10) 55%, transparent 59%);
+  animation: fxSweep 1200ms cubic-bezier(.2, .8, .2, 1) both;
+}
+#fx.fx-flame::after {
+  background: radial-gradient(120% 62% at 50% 108%, rgba(255, 138, 92, .40), rgba(255, 217, 184, .12) 46%, transparent 66%);
+  animation: fxRise 1700ms cubic-bezier(.2, .7, .2, 1) both;
+}
+#fx.fx-lightning::after {
+  background: radial-gradient(closest-side, rgba(169, 228, 255, .46), rgba(255, 255, 255, .14) 40%, transparent 62%);
+  animation: fxFlash 950ms ease-out both;
+}
+#fx.fx-sound::after {
+  background: repeating-radial-gradient(closest-side, rgba(180, 155, 255, .24) 0 7px, transparent 7px 46px);
+  animation: fxWiden 1900ms cubic-bezier(.2, .7, .2, 1) both;
+}
+#fx.fx-ink::after {
+  background: linear-gradient(96deg, transparent 28%, rgba(140, 224, 192, .22) 40%, rgba(217, 255, 242, .50) 48%,
+    rgba(20, 32, 30, .42) 55%, transparent 72%);
+  animation: fxSweep 1400ms cubic-bezier(.2, .8, .2, 1) both;
+}
+@keyframes fxBloom { 0% { opacity: 0; transform: translate(-50%, -50%) scale(.22); } 32% { opacity: .95; } 100% { opacity: 0; transform: translate(-50%, -50%) scale(1.04); } }
+@keyframes fxSpin { 0% { opacity: 0; transform: translate(-50%, -50%) scale(.35) rotate(0deg); } 28% { opacity: .9; } 100% { opacity: 0; transform: translate(-50%, -50%) scale(1) rotate(220deg); } }
+@keyframes fxSweep { 0% { opacity: 0; transform: translate(-50%, -50%) translateX(-46%); } 22% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -50%) translateX(46%); } }
+@keyframes fxRise { 0% { opacity: 0; transform: translate(-50%, 14%) scale(.92); } 28% { opacity: .9; } 100% { opacity: 0; transform: translate(-50%, -64%) scale(1.12); } }
+@keyframes fxFlash { 0% { opacity: 0; } 10% { opacity: 1; } 26% { opacity: .18; } 40% { opacity: .85; } 100% { opacity: 0; } }
+@keyframes fxWiden { 0% { opacity: 0; transform: translate(-50%, -50%) scale(.12); } 36% { opacity: .8; } 100% { opacity: 0; transform: translate(-50%, -50%) scale(1.18); } }
+@media (prefers-reduced-motion: reduce) {
+  #fx[class*="fx-"]::after { display: none !important; }
+}
+body.xx-calm #fx::after { display: none !important; }
+

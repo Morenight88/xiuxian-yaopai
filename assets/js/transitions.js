@@ -317,6 +317,10 @@
     if (calm()) { killAll(); return Promise.resolve(false); }
     var root = fx.root, M_ = CFG.motion.character, name = window.I18N.charName(ch);
     show(root, true); cls(root, 'fx-on', true);
+    // 每個角色的「起手式」主視覺（CSS 負責動畫）；作者上傳雲端影片後由影片取代
+    var FXK = ['petals', 'talisman', 'sword', 'flame', 'lightning', 'sound', 'ink'];
+    FXK.forEach(function (k) { cls(root, 'fx-' + k, false); });
+    if (!reduce()) cls(root, 'fx-' + (ch.fx || 'sword'), true);
     show(fx.center, true);
     fx.center.innerHTML = '<span class="fx-glyph" style="color:' + ch.c1 + '">' + (ch.glyph || '✦') + '</span>' +
       '<b class="fx-name">' + window.XXUtil.esc(name) + '</b>' +
@@ -329,6 +333,7 @@
     }).then(function () {
       show(fx.center, false); cls(fx.center, 'is-out', false);
       clearParts();
+      FXK.forEach(function (k) { cls(root, 'fx-' + k, false); });
       show(root, false); cls(root, 'fx-on', false);
     });
   }

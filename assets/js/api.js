@@ -501,11 +501,19 @@
     hasBackend: function () { return !!cloudUrl(); },
     originBlocked: function () { return location.protocol === 'file:'; },
     call: function (action, payload) {
-      if (this.mode() === 'cloud') return callCloud(action, payload);
+      payload = payload || {};
+      // 重要：雲端與示範模式都要自動補上登入權杖，
+      // 否則投票／建議／按讚／留言／發文會被後端判定「尚未登入」。
+      if (!('token' in payload) && needsToken(action)) payload.token = this.token();
+      if (this.mode() === 'cloud') {
+        var self = this;
+        return callCloud(action, payload).then(function (r) {
+          if (r && !r.ok && (r.error === 'NOT_SIGNED_IN' || r.error === 'SESSION_EXPIRED')) self.clearToken();
+          return r;
+        });
+      }
       var fn = localActions[action];
       if (!fn) return Promise.resolve(fail('NO_BACKEND', action));
-      payload = payload || {};
-      if ('token' in payload === false && needsToken(action)) payload.token = this.token();
       try { return Promise.resolve(fn(payload)); }
       catch (e) { return Promise.resolve(fail('SERVER', String(e && e.message || e))); }
     },
