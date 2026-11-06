@@ -204,6 +204,11 @@ window.XX_I18N = {
     'err.tooBig': '檔案太大（上限 {{size}}MB）。',
     'err.playback': '無法播放這個檔案，可能沒開「擁有連結的任何人有檢視權限」。',
     'err.generic': '操作失敗：{{message}}',
+    'err.cloudUpload': '這張符拿不上去：青羽門的傳書法陣在轉址時會把瀏覽器直接上傳的檔案內文吹散（實測連 0.1KB 都送不到）。請先把圖片或影片放進 Drive 的青羽門影像庫資料夾，回到發文視窗按「我放好了，重新檢查影像庫」，再用「雲端媒體」選用。',
+    'err.payloadBig': '這張符太長了：超過傳書法陣能承載的長度。請把文字縮短，媒體改用「雲端媒體」選用。',
+    'picker.cloudNote': '青羽門目前走傳書法陣（Apps Script）：從瀏覽器直接上傳的檔案會在轉址時散掉，所以雲端模式請先把檔案放進 Drive 的影像庫資料夾，再回來這裡選用。示範模式（沒接後端）仍可直接上傳。',
+    'picker.openDrive': '打開青羽門影像庫（Drive）',
+    'picker.recheck': '我放好了，重新檢查影像庫',
 
     'common.loading': '載入中…',
     'common.retry': '重試',
@@ -420,6 +425,11 @@ window.XX_I18N = {
     'err.tooBig': 'File too large (limit {{size}}MB).',
     'err.playback': 'This file cannot be played — it may not be shared with "anyone with the link".',
     'err.generic': 'Something failed: {{message}}',
+    'err.cloudUpload': 'This one cannot be carried up: the message array drops a browser-uploaded file on the redirect (measured: even 0.1KB never arrives). Please put the photo or video into the Qingyu Gate media vault folder on Drive first, press "I put it there — rescan the vault" in the composer, then pick it under "Media vault".',
+    'err.payloadBig': 'This talisman is too long — it is more than the message array can carry. Please shorten the text and pick media from the media vault instead.',
+    'picker.cloudNote': 'Qingyu Gate currently works through the message array (Apps Script): a file uploaded straight from the browser falls apart on the redirect, so in cloud mode put the file into the vault folder on Drive first, then pick it here. Demo mode (no backend) can still upload directly.',
+    'picker.openDrive': 'Open the media vault (Drive)',
+    'picker.recheck': 'I put it there — rescan the vault',
 
     'common.loading': 'Loading…',
     'common.retry': 'Retry',

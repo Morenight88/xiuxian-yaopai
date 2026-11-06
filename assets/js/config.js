@@ -13,7 +13,12 @@ window.XX_CONFIG = {
      Leave empty to run in local demo mode.                         */
   backend: {
     appsScriptUrl: 'https://script.google.com/macros/s/AKfycbz1qrRyeozT7ATMtNXO1PTMo3jM3nssdac30Nfh-_r39FPKbiASJ7C8bp7CN-cu47pK/exec',
-    transport: 'auto',        // 'auto' | 'post' | 'get'
+    /* 'auto' | 'post' | 'get'
+       2026-11 實測：這個 /exec 部署會 302 轉址，瀏覽器 POST 的內文會整份遺失
+       （0.1KB～6MB 全都送不到），所以這裡固定走 GET ?p=…，
+       否則每個動作都要先白跑一次 POST 再改送 GET（慢一倍）。
+       如果之後換成不會轉址的後端（例如 Cloudflare Worker），可以改回 'auto'。 */
+    transport: 'get',
     timeoutMs: 12000,         // 單次請求逾時（Apps Script 冷開機可能要 5-8 秒）
     pollMs: 25000             // 主頁自動更新間隔（0 = 關閉）
   },
@@ -85,7 +90,8 @@ window.XX_CONFIG = {
     maxUploadBytes: 6000000,      // 上傳圖片/GIF 上限 6MB
     postCaptionMax: 600,
     commentMax: 400,
-    suggestMax: 2000,
+    suggestMax: 600,          // 提議上限（字）：GET 傳書最長約 6000 字元編碼，
+                              // 600 個中文字編碼後約 5400，留安全空間；超過會被瀏覽器擋掉
     commentsPreview: 2,
 
     /* ── 6b. 卡住救援：網頁沒回應時自動回到登入畫面 ─────────────────── */

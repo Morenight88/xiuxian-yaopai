@@ -447,6 +447,14 @@
     if (!base) return Promise.resolve(fail('NO_BACKEND'));
     if (location.protocol === 'file:') return Promise.resolve(fail('FILE_ORIGIN', 'err.fileOrigin'));
     var body = JSON.stringify({ v: 1, action: action, payload: payload || {} });
+    // 實測（Chrome → 部署後的 /exec）：瀏覽器 POST 的內文在 302 轉址時「整份遺失」，
+    // 0.1KB／58KB／200KB／1MB／3MB／6MB 全都送不到，所以小的動作一律改走 GET；
+    // 但 GET 有網址長度上限，幾 MB 的檔案絕對塞不進去 → 直接講清楚，
+    // 不要讓它變成莫名的「連不上青羽門平台」。
+    if ((action === 'createPost' || action === 'addComment') && payload && payload.media && payload.media.dataUrl) {
+      return Promise.resolve(fail('CLOUD_UPLOAD', 'err.cloudUpload'));
+    }
+    if (encodeURIComponent(body).length > 6000) return Promise.resolve(fail('PAYLOAD_TOO_BIG', 'err.payloadBig'));
     var transport = CFG.backend.transport;
     var timeout = new Promise(function (_, rej) { setTimeout(function () { rej(coded('timeout')); }, CFG.backend.timeoutMs); });
 
@@ -620,6 +628,7 @@
       FILE_NOT_FOUND: 'err.notFound', POST_NOT_FOUND: 'err.notFound', COMMENT_NOT_FOUND: 'err.notFound',
       FOLDER_NOT_FOUND: 'err.network', PERMISSION: 'err.network', NO_KEY: 'picker.noBackend',
       UPLOAD_TOO_LARGE: 'err.tooBig', UPLOAD_EMPTY: 'composer.needMedia', SUGGESTION_TOO_LONG: 'err.generic',
+      CLOUD_UPLOAD: 'err.cloudUpload', PAYLOAD_TOO_BIG: 'err.payloadBig',
       MEDIA_FOLDER_NOT_ALLOWED: 'err.notFound', UNKNOWN_ACTION: 'err.generic', BAD_REQUEST: 'err.generic' };
     return m[r.error] || 'err.generic';
   };

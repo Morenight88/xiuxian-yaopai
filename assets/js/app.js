@@ -194,7 +194,7 @@
     bindStatic();
     // 作者預覽／測試用：?shot=account|fav|home|settings|suggest（僅限示範模式）
     var shot = (q.get('shot') || '').toLowerCase();
-    var animOnly = { intro: 1, drop: 1, sword: 1, char: 1, debug: 1, flow: 1, stuck: 1, watchdog: 1, loginflow: 1 };
+    var animOnly = { intro: 1, drop: 1, sword: 1, char: 1, debug: 1, flow: 1, stuck: 1, watchdog: 1, loginflow: 1, auth: 1, fx7: 1 };
     if (shot && (API.mode() === 'local' || animOnly[shot])) { return previewShot(shot).catch(function (e) { console.warn('[xx] preview', e); }); }
     if (!saved) { showScreen('lang', { instant: true }); bootMark('ready'); if (rough) toast(t('recovery.boot'), 'bad'); return; }
     markLang(saved);
@@ -300,6 +300,35 @@
           API.login = realLogin;
           logDump(llog);
         });
+    }
+    if (shot === 'auth') {
+      // 驗證「需要登入的動作」是否自動带上權杖（搭配會驗證權杖的模擬後端）
+      var alog = [];
+      API.setToken('TEST-TOKEN-123', true);
+      function probe(label, p) {
+        return p.then(function (r) { alog.push(label + ' → ok=' + (r && r.ok) + ' | error=' + ((r && r.error) || '-')); });
+      }
+      return probe('setFavorite 帶權杖  ', API.setFavorite('shi-zun'))
+        .then(function () { return probe('submitSuggestion 帶權杖', API.suggest('測試建議')); })
+        .then(function () { return probe('setFavorite 故意不帶  ', API.call('setFavorite', { characterId: 'shi-zun', token: '' })); })
+        .then(function () { return probe('createPost 附上傳檔案', API.createPost({ text: '測試', media: { dataUrl: 'data:image/png;base64,iVBORw0KGgo=', name: 'x.png', kind: 'image' } })); })
+        .then(function () { return probe('suggest 超過法陣長度', API.suggest(new Array(701).join('測'))); })
+        .then(function () { API.setToken('TEST-TOKEN-123', true); return probe('createPost 純文字   ', API.createPost({ text: '這則只有文字，應該要成功' })); })
+        .then(function () { logDump(alog); API.clearToken(); });
+    }
+    if (shot === 'fx7') {
+      // 七種內建角色過場動畫依序跑，確認每個都能完成並把覆蓋層收干净
+      showScreen('home', { instant: true });
+      var flog = [], chain = Promise.resolve();
+      CHARS.forEach(function (ch, i) {
+        chain = chain.then(function () {
+          return TR.character(ch).then(function () {
+            flog.push((i + 1) + '. ' + ch.zh + '（fx=' + ch.fx + '）跑完=true' +
+              ' | 覆蓋層已收=' + ($('#fx').hidden === true) + ' | veilOn=' + $('#fx').classList.contains('fx-on'));
+          });
+        });
+      });
+      return chain.then(function () { logDump(flog); });
     }
     var demoName = '試劍者', admin = CFG.admin.username;
     return API.init()
@@ -852,6 +881,8 @@
   }
 
   function stageCommentMedia(node, p, file) {
+    // 雲端模式：留言附檔也是瀏覽器直接上傳 → 內文一樣會在轉址時遺失，先講清楚而不是報「連不上」
+    if (API.mode() === 'cloud') return toast(t('err.cloudUpload'), 'bad');
     var lim = CFG.site.maxUploadBytes;
     if (file.size > lim) return toast(t('err.tooBig', { size: Math.round(lim / 1048576) }), 'bad');
     U.readFileAsDataUrl(file).then(function (du) {
@@ -1099,6 +1130,28 @@
       b.appendChild(el('<p class="pk-note">' + U.esc(state.tab === 'videos' ? t('picker.uploadNote', { size: Math.round(CFG.site.maxUploadBytes / 1048576) }) : t('picker.linkNote')) + '</p>'));
     }
     function uploadTab(b) {
+      // 雲端模式：瀏覽器直接上傳的內文會在 Apps Script 轉址時遺失（實測任何大小都送不到），
+      // 所以這條改成「把檔案放進 Drive 影像庫 → 回來選用」的步驟，不要再讓它假裝能上傳。
+      if (API.mode() === 'cloud') {
+        var scope = state.scope || 'videos';
+        var fid = scope === 'comments' ? CFG.drive.commentsFolderId : CFG.drive.videosFolderId;
+        var w = el('<div class="pk-form"><p class="pk-note">' + U.esc(t('picker.cloudNote')) + '</p>' +
+          '<button type="button" class="btn btn-primary" data-act="open-drive">' + U.esc(t('picker.openDrive')) + '</button>' +
+          '<button type="button" class="btn btn-mini" data-act="rescan">' + U.esc(t('picker.recheck')) + '</button>' +
+          '<p class="pk-note">' + U.esc(t(scope === 'comments' ? 'picker.images' : 'picker.videos')) + ' · ' + U.esc(String(fid || '')) + '</p>' +
+          '<p class="pk-note">' + U.esc(t('picker.linkNote')) + '</p></div>');
+        b.appendChild(w);
+        $('[data-act=open-drive]', w).onclick = function () {
+          if (!fid) return toast(t('err.generic', { message: 'folder id missing' }), 'bad');
+          window.open('https://drive.google.com/drive/folders/' + fid, '_blank', 'noopener');
+        };
+        $('[data-act=rescan]', w).onclick = function () {
+          state.tab = scope === 'comments' ? 'images' : 'videos';
+          $$('.pt', box).forEach(function (x) { x.classList.toggle('is-on', x.dataset.tab === state.tab); });
+          paint(); fetchTab();
+        };
+        return;
+      }
       var wrap = el('<div class="pk-form"><input type="file" accept="image/*,video/*" class="pk-file"><p class="pk-note">' +
         U.esc(t('picker.uploadNote', { size: Math.round(CFG.site.maxUploadBytes / 1048576) })) + '</p><div class="pk-preview"></div></div>');
       b.appendChild(wrap);
@@ -1130,8 +1183,9 @@
       };
     }
     function fetchTab() {
+      state.scope = state.tab === 'videos' ? 'videos' : 'comments';
       state.loading = true; paint();
-      API.listMedia(state.tab === 'videos' ? 'videos' : 'comments').then(function (r) {
+      API.listMedia(state.scope).then(function (r) {
         state.loading = false;
         state.items = (r && r.media) ? r.media.filter(function (x) {
           if (state.tab === 'videos') return x.kind === 'video';
@@ -1159,7 +1213,7 @@
       '<div class="set-row"><span class="ava lg">' + U.esc(S.user.username.slice(0, 1)) + '</span><div><b>' + U.esc(S.user.username) + '</b>' +
       '<i>' + U.esc(t(isAdmin() ? 'settings.roleAdmin' : 'settings.roleMember') + ' · ' + backendLabel()) + '</i></div>' +
       (isAdmin() ? '<span class="badge">' + t('settings.roleAdmin') + '</span>' : '') + '</div>' +
-      '<p class="set-hint">' + t('settings.plainNote') + '</p></div>'));
+      '</div>'));
 
     // 語言
     var langCard = el('<div class="set-card"><h3>' + t('settings.language') + '</h3><div class="seg" id="set-lang">' +
