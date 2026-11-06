@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080b12">
+<title>修仙也要拍 · XiuXian Also Films</title>
+<meta name="description" content="修仙也要拍 — 一個像 Instagram 的修仙粉絲專頁，影片存放於 Google Drive 雲端資料夾。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;900&family=Noto+Sans+TC:wght@300;400;500;700&family=Cinzel:wght@600;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/app.css">
+<link rel="stylesheet" href="assets/css/anim.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b1220'/%3E%3Cpath d='M32 6 L36 40 L32 52 L28 40 Z' fill='%23e6c26b'/%3E%3Crect x='22' y='38' width='20' height='4' rx='2' fill='%234fd1a5'/%3E%3C/svg%3E">
+</head>
+<body class="boot">
+
+<!-- ══════════ 背景層：靈氣粒子 + 墨霧 ══════════ -->
+<div id="bg" aria-hidden="true">
+  <canvas id="bg-canvas"></canvas>
+  <div class="bg-mist"></div>
+  <div class="bg-vignette"></div>
+</div>
+
+<!-- ══════════ 開場過場動畫（飛劍掠過 + 霸氣文字）══════════ -->
+<div id="intro" class="overlay" hidden>
+  <div class="intro-mountains" aria-hidden="true"></div>
+  <div class="intro-sword" aria-hidden="true">
+    <div class="sword-trail"></div>
+    <svg viewBox="0 0 120 24" class="sword-svg" width="150" height="30">
+      <path d="M4 12 L74 8 L96 12 L74 16 Z" fill="url(#blade)"/>
+      <rect x="74" y="10.6" width="18" height="2.8" rx="1.4" fill="#8a5a2b"/>
+      <circle cx="96" cy="12" r="2.4" fill="#e6c26b"/>
+      <defs>
+        <linearGradient id="blade" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#f7fbff" stop-opacity=".25"/>
+          <stop offset=".55" stop-color="#dfe9f7"/>
+          <stop offset="1" stop-color="#9fd7ff"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    <div class="sword-spark"></div>
+  </div>
+  <div class="intro-slash" aria-hidden="true"></div>
+  <div class="intro-wordmark">
+    <div class="wordmark-chars" id="intro-chars"></div>
+    <div class="wordmark-seal"><span data-brand-seal>亦拍</span></div>
+  </div>
+  <p class="intro-sub" id="intro-sub" data-i18n="intro.sub"></p>
+  <button type="button" class="skip-btn" id="intro-skip" data-i18n="intro.skip"></button>
+</div>
+
+<!-- ══════════ 轉場特效層（水滴／飛劍／角色動畫／影片）══════════ -->
+<div id="fx" class="overlay" hidden>
+  <div class="fx-drop" id="fx-drop" hidden><i></i></div>
+  <div class="fx-ripples" id="fx-ripples" hidden></div>
+  <div class="fx-sweep" id="fx-sweep" hidden></div>
+  <canvas id="fx-canvas" hidden></canvas>
+  <div class="fx-center" id="fx-center" hidden></div>
+  <video id="fx-video" class="fx-video" hidden playsinline muted preload="auto"></video>
+  <div class="fx-fade" id="fx-fade"></div>
+</div>
+
+<!-- ══════════ 第一步驟：選擇語言 ══════════ -->
+<main id="screens">
+<section id="screen-lang" class="screen screen-lang" hidden>
+  <div class="lang-wrap">
+    <header class="brand-head">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64" width="52" height="52">
+          <path d="M32 4 L37 42 L32 58 L27 42 Z" fill="#e6c26b"/>
+          <rect x="20" y="40" width="24" height="4" rx="2" fill="#4fd1a5"/>
+          <path d="M6 52 Q18 40 32 46 Q46 52 58 42" stroke="#4fd1a5" stroke-opacity=".5" fill="none" stroke-width="2"/>
+        </svg>
+      </div>
+      <h1 class="brand-name">修仙也要拍</h1>
+      <p class="brand-latin">XiuXian Also Films</p>
+    </header>
+    <h2 class="step-title" data-i18n="lang.title"></h2>
+    <p class="step-sub" data-i18n="lang.sub"></p>
+    <div class="lang-cards" role="group" aria-label="Language">
+      <button type="button" class="lang-card" data-lang="zh" id="lang-zh">
+        <span class="lang-big">中文</span>
+        <span class="lang-small">繁體中文</span>
+        <span class="lang-hint" data-i18n="lang.zhHint"></span>
+      </button>
+      <button type="button" class="lang-card" data-lang="en" id="lang-en">
+        <span class="lang-big">English</span>
+        <span class="lang-small">English</span>
+        <span class="lang-hint" data-i18n="lang.enHint"></span>
+      </button>
+    </div>
+    <p class="lang-note" data-i18n="lang.note"></p>
+  </div>
+</section>
+
+<!-- ══════════ 第二步驟：建立帳號 / 登入 ══════════ -->
+<section id="screen-account" class="screen screen-account" hidden>
+  <div class="auth-wrap">
+    <div class="auth-side">
+      <h2 class="auth-side-title" data-brand-name></h2>
+      <p class="auth-side-text" data-i18n="account.sideText"></p>
+      <ul class="auth-side-list">
+        <li><span>①</span><b data-i18n="account.f1t"></b><i data-i18n="account.f1d"></i></li>
+        <li><span>②</span><b data-i18n="account.f2t"></b><i data-i18n="account.f2d"></i></li>
+        <li><span>③</span><b data-i18n="account.f3t"></b><i data-i18n="account.f3d"></i></li>
+      </ul>
+      <p class="auth-backend" id="account-backend"></p>
+    </div>
+    <div class="auth-card">
+      <div class="tabs" role="tablist">
+        <button type="button" class="tab is-active" id="tab-register" role="tab" data-i18n="account.tabCreate"></button>
+        <button type="button" class="tab" id="tab-login" role="tab" data-i18n="account.tabLogin"></button>
+        <span class="tab-ink" id="tab-ink"></span>
+      </div>
+
+      <form id="form-register" class="auth-form" novalidate>
+        <h3 class="form-title" data-i18n="signup.title"></h3>
+        <p class="form-sub" data-i18n="signup.sub"></p>
+        <label class="field">
+          <span data-i18n="signup.name"></span>
+          <input id="reg-name" type="text" autocomplete="username" maxlength="20" data-i18n-placeholder="signup.namePh" required>
+          <em class="field-hint" data-i18n="signup.nameRule"></em>
+        </label>
+        <label class="field">
+          <span data-i18n="signup.password"></span>
+          <input id="reg-pw" type="password" autocomplete="new-password" data-i18n-placeholder="signup.pwPh" required>
+          <em class="field-hint" data-i18n="signup.pwRule"></em>
+        </label>
+        <label class="field">
+          <span data-i18n="signup.confirm"></span>
+          <input id="reg-pw2" type="password" autocomplete="new-password" data-i18n-placeholder="signup.pwPh" required>
+        </label>
+        <label class="check">
+          <input id="reg-remember" type="checkbox">
+          <span data-i18n="account.remember"></span>
+        </label>
+        <p class="form-error" id="reg-error" hidden></p>
+        <button type="submit" class="btn btn-primary" id="reg-submit" data-i18n="signup.create"></button>
+        <p class="form-alt"><span data-i18n="signup.have"></span> <button type="button" class="linklike" id="goto-login" data-i18n="signup.gotoLogin"></button></p>
+      </form>
+
+      <form id="form-login" class="auth-form" hidden novalidate>
+        <h3 class="form-title" data-i18n="login.title"></h3>
+        <p class="form-sub" data-i18n="login.sub"></p>
+        <label class="field">
+          <span data-i18n="login.name"></span>
+          <input id="log-name" type="text" autocomplete="username" data-i18n-placeholder="login.namePh" required>
+        </label>
+        <label class="field">
+          <span data-i18n="login.password"></span>
+          <input id="log-pw" type="password" autocomplete="current-password" data-i18n-placeholder="login.pwPh" required>
+        </label>
+        <label class="check">
+          <input id="log-remember" type="checkbox">
+          <span data-i18n="account.remember"></span>
+          <em class="check-hint" data-i18n="account.rememberHint"></em>
+        </label>
+        <p class="form-error" id="log-error" hidden></p>
+        <button type="submit" class="btn btn-primary" id="log-submit" data-i18n="login.submit"></button>
+        <p class="form-alt"><span data-i18n="login.noAccount"></span> <button type="button" class="linklike" id="goto-register" data-i18n="login.gotoCreate"></button></p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 第三步驟：喜歡的角色 ══════════ -->
+<section id="screen-fav" class="screen screen-fav" hidden>
+  <div class="fav-wrap">
+    <p class="fav-step" data-i18n="fav.step"></p>
+    <h2 class="fav-question" data-i18n="fav.question"></h2>
+    <p class="fav-sub" data-i18n="fav.sub"></p>
+    <div class="fav-grid" id="fav-grid"></div>
+    <div class="fav-foot">
+      <span id="fav-total" class="fav-total"></span>
+      <button type="button" class="btn btn-ghost" id="fav-skip" data-i18n="fav.later"></button>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 主頁（主頁 / 設定 / 建議）══════════ -->
+<section id="screen-home" class="screen screen-home" hidden>
+  <nav id="rail" aria-label="Main">
+    <div class="rail-brand">
+      <svg viewBox="0 0 64 64" width="30" height="30" aria-hidden="true">
+        <path d="M32 4 L37 42 L32 58 L27 42 Z" fill="#e6c26b"/>
+        <rect x="20" y="40" width="24" height="4" rx="2" fill="#4fd1a5"/>
+      </svg>
+      <span data-brand-name></span>
+    </div>
+    <div class="rail-list" id="rail-list"></div>
+    <div class="rail-foot" id="rail-foot"></div>
+  </nav>
+
+  <div class="home-main">
+    <header id="topbar">
+      <div class="topbar-title">
+        <h2 id="panel-title"></h2>
+        <p id="panel-sub"></p>
+      </div>
+      <div class="topbar-actions">
+        <button type="button" class="icon-btn" id="btn-refresh" data-i18n-title="common.refresh" title="re-sync">
+          <svg viewBox="0 0 24 24" width="20" height="20"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v4h-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+        <button type="button" class="icon-btn" id="btn-lang" data-i18n-title="settings.language" title="language">
+          <svg viewBox="0 0 24 24" width="20" height="20"><path d="M4 6h9M8.5 6c0 5-2 8-4.5 9M6 10c1.4 3 3.6 4.6 6 5M13 18l4-10 4 10M14.4 15h5.2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        </button>
+        <div class="me" id="topbar-me"></div>
+      </div>
+    </header>
+
+    <div class="mode-banner" id="mode-banner" hidden>
+      <span id="mode-banner-text"></span>
+      <button type="button" class="linklike" id="mode-banner-act" data-i18n="mode.howto"></button>
+    </div>
+
+    <div class="panels" id="panels">
+      <div class="panel" id="panel-feed" hidden>
+        <div id="composer-root"></div>
+        <div id="feed" class="feed"></div>
+        <div id="feed-foot" class="feed-foot"></div>
+      </div>
+      <div class="panel" id="panel-settings" hidden></div>
+      <div class="panel" id="panel-suggest" hidden></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ══════════ 手機底部導覽 ══════════ -->
+<nav id="bottom-nav" hidden aria-label="Bottom"></nav>
+
+<!-- ══════════ 卡住救援：網頁沒回應時出現 ══════════ -->
+<div id="rescue" hidden role="alert">
+  <b id="rescue-q">卡住了嗎？</b>
+  <button id="rescue-login" type="button">返回登入畫面</button>
+  <button id="rescue-calm" type="button" class="ghost">關閉動畫</button>
+  <i id="rescue-key">Shift＋L</i>
+</div>
+
+<div id="modal-root"></div>
+<div id="toast-root" aria-live="polite"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/transitions.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

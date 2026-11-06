@@ -1,0 +1,281 @@
+/* ══════════════════════════════════════════════════════════════════════
+   修仙也要拍 · 過場動畫樣式 (anim.css)
+   開場飛劍＋霸氣文字 / 水滴＋漣漪 / 飛劍掠過 / 角色過場
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ─────────────── 通用淡出 ─────────────── */
+.fade-out { opacity: 0 !important; transition: opacity .55s var(--ease), transform .55s var(--ease), filter .55s var(--ease); }
+#intro.fade-out { transform: scale(1.035); filter: blur(7px); }
+#fx.fade-out { filter: blur(7px); }
+
+/* ═══════════ 開場：飛劍掠過 → 霸氣文字 ═══════════ */
+#intro {
+  z-index: 100; display: grid; place-items: center; pointer-events: auto;
+  background: radial-gradient(1100px 640px at 50% 26%, #1c2a42 0%, #070b12 62%, #04060a 100%);
+  opacity: 1; transition: opacity .6s var(--ease), transform .6s var(--ease), filter .6s var(--ease);
+}
+.intro-mountains {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 46%;
+  background:
+    radial-gradient(120% 100% at 20% 100%, rgba(10, 18, 30, .95), transparent 60%),
+    radial-gradient(120% 100% at 78% 100%, rgba(14, 24, 38, .9), transparent 62%),
+    linear-gradient(0deg, rgba(4, 7, 12, .95), transparent 70%);
+  clip-path: polygon(0 62%, 9% 40%, 18% 58%, 27% 32%, 38% 56%, 46% 26%, 56% 52%, 66% 30%, 76% 55%, 86% 38%, 95% 60%, 100% 46%, 100% 100%, 0 100%);
+  opacity: .95;
+}
+.intro-mountains::after {
+  content: ""; position: absolute; inset: 0;
+  background: radial-gradient(60% 40% at 50% 96%, rgba(230, 194, 107, .16), transparent 70%);
+}
+
+/* 飛劍 */
+.intro-sword { position: absolute; left: -18%; top: 34%; opacity: 0; will-change: transform, opacity; }
+.intro-sword svg { position: relative; z-index: 2; filter: drop-shadow(0 0 14px rgba(190, 225, 255, .55)); }
+.sword-trail {
+  position: absolute; right: 100%; top: 50%; width: 340px; height: 8px; transform: translateY(-50%);
+  background: linear-gradient(90deg, rgba(190, 225, 255, 0), rgba(190, 225, 255, .5), rgba(255, 255, 255, .95));
+  filter: blur(3px); border-radius: 8px;
+}
+.sword-spark {
+  position: absolute; left: 50%; top: 50%; width: 10px; height: 10px; border-radius: 50%;
+  background: #fff; box-shadow: 0 0 26px 8px rgba(190, 225, 255, .8); opacity: 0;
+}
+#intro.is-sword .intro-sword { animation: introSwordFly var(--sword-dur, 1250ms) cubic-bezier(.5, .05, .35, 1) forwards; }
+#intro.is-sword .sword-spark { animation: swordSpark var(--sword-dur, 1250ms) ease-out forwards; }
+.intro-slash {
+  position: absolute; left: -30%; top: 30%; width: 160%; height: 2px; transform: rotate(-9deg) scaleX(0);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .9), rgba(230, 194, 107, .7), transparent);
+  opacity: 0;
+}
+#intro.is-sword .intro-slash { animation: introSlash var(--sword-dur, 1250ms) cubic-bezier(.4, .1, .3, 1) forwards var(--word-dur, 900ms); }
+
+/* 霸氣文字 */
+.intro-wordmark { position: relative; display: grid; justify-items: center; gap: 14px; z-index: 3; }
+.wordmark-chars { display: flex; gap: .04em; }
+.wch {
+  font-family: "Noto Serif TC", "Songti TC", serif; font-weight: 900;
+  font-size: clamp(2.9rem, 11.5vw, 7.4rem); line-height: 1;
+  background: linear-gradient(178deg, #fff8e6 8%, #e6c26b 46%, #a86a34 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  opacity: 0; transform: translateY(-.35em) scale(1.25);
+  filter: blur(10px);
+  animation: wordSmash 620ms cubic-bezier(.18, .9, .24, 1) forwards;
+  will-change: transform, opacity, filter;
+  text-shadow: 0 0 60px rgba(230, 194, 107, .28);
+}
+.wch:not(:last-child) { margin-right: .03em; }
+.wordmark-seal {
+  position: absolute; right: -1.1em; bottom: -.1em; width: 2.1em; height: 2.1em; border-radius: 8px;
+  display: grid; place-items: center; font-family: "Noto Serif TC", serif; font-size: clamp(.6rem, 1.6vw, .9rem);
+  line-height: 1.05; color: #ffe9d0; background: rgba(176, 48, 38, .82); border: 2px solid rgba(255, 210, 190, .5);
+  opacity: 0; transform: scale(1.6) rotate(-8deg);
+}
+#intro.is-sword .wordmark-seal { animation: sealIn 520ms var(--ease-out) forwards; animation-delay: calc(var(--sword-dur, 1250ms) + var(--word-dur, 900ms) + 220ms); }
+.intro-sub {
+  position: absolute; bottom: 16%; left: 0; right: 0; text-align: center; margin: 0;
+  color: rgba(233, 239, 247, .62); letter-spacing: .5em; text-indent: .5em; font-size: clamp(.7rem, 1.6vw, .92rem);
+  opacity: 0;
+}
+#intro.is-sword .intro-sub { animation: riseIn 700ms var(--ease-out) forwards; animation-delay: calc(var(--sword-dur, 1250ms) + 320ms); }
+.skip-btn {
+  position: absolute; right: 18px; bottom: 16px; padding: .5em 1em; border-radius: 999px;
+  background: rgba(255, 255, 255, .05); border: 1px solid var(--line); color: var(--dimmer);
+  font-size: .74rem; cursor: pointer; letter-spacing: .12em; transition: .25s var(--ease);
+}
+.skip-btn:hover { color: var(--gold); border-color: var(--line-strong); }
+body.intro-running { overflow: hidden; }
+#intro.is-skip { transition-duration: .26s; transform: scale(1.02); }
+
+/* ═══════════ 轉場層 ═══════════ */
+#fx { z-index: 95; pointer-events: none; background: transparent; transition: background .5s var(--ease); }
+#fx.fx-on { background: radial-gradient(1000px 620px at 50% 50%, rgba(12, 20, 33, .82), rgba(4, 6, 10, .93)); }
+#fx .fx-fade { position: absolute; inset: 0; opacity: 0; }
+
+/* ── 1. 水滴落下 + 漣漪 ── */
+.fx-drop { position: absolute; left: 50%; top: 0; width: 26px; height: 34px; transform: translate(-50%, -12vh); }
+.fx-drop i {
+  display: block; width: 100%; height: 100%; border-radius: 50% 50% 46% 46% / 62% 62% 38% 38%;
+  background: linear-gradient(180deg, rgba(210, 240, 255, .95), rgba(127, 196, 255, .75) 60%, rgba(79, 209, 165, .55));
+  box-shadow: 0 0 24px rgba(127, 196, 255, .6), inset 0 -6px 10px rgba(255, 255, 255, .4);
+}
+.fx-drop.is-falling { animation: dropFall var(--drop-fall, 900ms) cubic-bezier(.45, .05, .6, .95) forwards; }
+.fx-ripples { position: absolute; left: 50%; top: 50%; width: 0; height: 0; }
+.ripple {
+  position: absolute; left: 0; top: 0; width: 40px; height: 40px; margin: -20px 0 0 -20px; border-radius: 50%;
+  border: 2px solid rgba(150, 215, 255, .8); opacity: 0;
+  box-shadow: 0 0 22px rgba(127, 196, 255, .35), inset 0 0 18px rgba(210, 240, 255, .3);
+  animation: rippleOut var(--ripple-dur, 1250ms) cubic-bezier(.16, 1, .3, 1) forwards;
+}
+#fx.is-wet .fx-fade { animation: wetVeil var(--ripple-dur, 1250ms) var(--ease-out) forwards; }
+#fx.is-wet { background: radial-gradient(900px 560px at 50% 50%, rgba(20, 40, 62, .5), rgba(4, 6, 10, .72)); }
+
+/* ── 2. 飛劍掠過 ── */
+.fx-sweep {
+  position: absolute; left: -35%; top: 26%; width: 170%; height: 76px; transform: rotate(-11deg) translateX(-40%);
+  opacity: 0; will-change: transform, opacity;
+  background:
+    linear-gradient(90deg, transparent, rgba(190, 225, 255, .0) 8%, var(--sweep-color, #cfe9ff) 46%, #ffffff 52%, rgba(190, 225, 255, 0) 78%, transparent),
+    linear-gradient(0deg, transparent 42%, rgba(255, 255, 255, .35) 50%, transparent 58%);
+  filter: blur(2px);
+}
+.fx-sweep::after {
+  content: ""; position: absolute; right: 44%; top: 50%; width: 22px; height: 22px; border-radius: 50%;
+  background: #fff; box-shadow: 0 0 40px 12px var(--sweep-color, #cfe9ff); transform: translateY(-50%);
+}
+.fx-sweep.is-passing { animation: sweepAcross var(--sweep-dur, 1450ms) cubic-bezier(.35, .3, .25, 1) forwards; }
+
+/* ── 3. 角色過場（特效／影片）── */
+#fx-canvas { position: absolute; inset: 0; }
+.fx-center { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 8px; text-align: center; }
+.fx-glyph { font-size: clamp(3.4rem, 12vw, 7rem); line-height: 1; filter: drop-shadow(0 0 28px currentColor); opacity: 0; transform: scale(.6); }
+.fx-name { font-family: "Noto Serif TC", serif; font-size: clamp(1.4rem, 5vw, 2.6rem); color: var(--gold-soft); letter-spacing: .14em; opacity: 0; transform: translateY(14px); }
+.fx-tag { color: var(--dimmer); font-size: .74rem; letter-spacing: .3em; text-transform: uppercase; opacity: 0; }
+.fx-center.is-pop .fx-glyph { animation: fxGlyph 1.5s var(--ease-out) forwards; }
+.fx-center.is-pop .fx-name { animation: fxName 1s var(--ease-out) .18s forwards; }
+.fx-center.is-pop .fx-tag { animation: riseIn .9s var(--ease-out) .3s forwards; }
+.fx-center.is-out { opacity: 0; transform: scale(1.06); transition: opacity .32s var(--ease), transform .32s var(--ease); }
+.fx-video {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0;
+  background: #04060a; transform: scale(1.04);
+}
+.fx-video.is-playing { animation: fxVideoIn 1s var(--ease-out) forwards; }
+
+/* ── 點擊漣漪回饋 ── */
+.tap-ripple {
+  position: fixed; z-index: 140; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%;
+  border: 2px solid rgba(230, 194, 107, .8); pointer-events: none; animation: rippleOut .6s var(--ease-out) forwards;
+}
+
+/* ═══════════ Keyframes ═══════════ */
+@keyframes introSwordFly {
+  0% { transform: translate3d(-10vw, 34vh, 0) rotate(-14deg) scale(.7); opacity: 0; }
+  12% { opacity: 1; }
+  46% { transform: translate3d(52vw, 6vh, 0) rotate(-11deg) scale(1.1); opacity: 1; }
+  70% { transform: translate3d(96vw, -10vh, 0) rotate(-9deg) scale(1); opacity: .9; }
+  100% { transform: translate3d(128vw, -22vh, 0) rotate(-8deg) scale(.9); opacity: 0; }
+}
+@keyframes swordSpark {
+  0%, 18% { opacity: 0; }
+  40% { opacity: 1; }
+  74% { opacity: .5; }
+  100% { opacity: 0; }
+}
+@keyframes introSlash {
+  0% { transform: rotate(-9deg) scaleX(0); opacity: 0; }
+  35% { transform: rotate(-9deg) scaleX(1); opacity: .95; }
+  100% { transform: rotate(-9deg) scaleX(1.1); opacity: 0; }
+}
+@keyframes wordSmash {
+  0% { opacity: 0; transform: translateY(-.35em) scale(1.25); filter: blur(10px); }
+  55% { opacity: 1; transform: translateY(.04em) scale(.96); filter: blur(0); }
+  78% { transform: translateY(-.02em) scale(1.03); }
+  100% { opacity: 1; transform: none; filter: blur(0); }
+}
+@keyframes sealIn {
+  0% { opacity: 0; transform: scale(1.8) rotate(-14deg); }
+  60% { opacity: 1; transform: scale(.94) rotate(-4deg); }
+  100% { opacity: .92; transform: scale(1) rotate(-3deg); }
+}
+@keyframes riseIn {
+  0% { opacity: 0; transform: translateY(14px); letter-spacing: .62em; }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes dropFall {
+  0% { transform: translate(-50%, -14vh) scale(.55, .35); opacity: 0; }
+  12% { opacity: 1; transform: translate(-50%, -10vh) scale(.85, 1.15); }
+  55% { transform: translate(-50%, 22vh) scale(.72, 1.35); opacity: 1; }
+  82% { transform: translate(-50%, 47vh) scale(.62, 1.5); }
+  96% { transform: translate(-50%, 50vh) scale(1.5, .35); opacity: .85; }
+  100% { transform: translate(-50%, 50vh) scale(2.1, .12); opacity: 0; }
+}
+@keyframes rippleOut {
+  0% { transform: scale(.12); opacity: .0; }
+  12% { opacity: .95; }
+  100% { transform: scale(15); opacity: 0; }
+}
+@keyframes wetVeil {
+  0% { opacity: .9; }
+  40% { opacity: .45; }
+  100% { opacity: 0; }
+}
+@keyframes sweepAcross {
+  0% { transform: rotate(-11deg) translateX(-45%); opacity: 0; }
+  16% { opacity: 1; }
+  55% { opacity: 1; }
+  100% { transform: rotate(-11deg) translateX(105%); opacity: 0; }
+}
+@keyframes fxGlyph {
+  0% { opacity: 0; transform: scale(.55) rotate(-8deg); filter: blur(12px) drop-shadow(0 0 28px currentColor); }
+  38% { opacity: 1; transform: scale(1.06) rotate(2deg); filter: blur(0) drop-shadow(0 0 34px currentColor); }
+  70% { transform: scale(1) rotate(0); }
+  100% { opacity: .92; transform: scale(1.02); }
+}
+@keyframes fxName {
+  0% { opacity: 0; transform: translateY(16px) scale(.96); letter-spacing: .3em; }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes fxVideoIn {
+  0% { opacity: 0; transform: scale(1.06); }
+  18% { opacity: 1; }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes heartPop {
+  0% { transform: scale(.6); }
+  50% { transform: scale(1.35); }
+  75% { transform: scale(.94); }
+  100% { transform: scale(1); }
+}
+@keyframes dropIn {
+  0% { opacity: 0; transform: translateY(-14px) scale(.9); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes cmtIn {
+  0% { opacity: 0; transform: translateX(-10px); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes formIn {
+  0% { opacity: 0; transform: translateY(12px); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes shakeIn {
+  0% { opacity: 0; transform: translateX(-8px); }
+  40% { transform: translateX(5px); }
+  70% { transform: translateX(-3px); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes brandFloat {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(-8px) rotate(-2deg); }
+}
+.is-skeleton .sk { animation: skShine 1.5s linear infinite; }
+@keyframes skShine {
+  0% { background-position: 120% 0; }
+  100% { background-position: -120% 0; }
+}
+
+/* 動畫節奏由 JS 注入 CSS 變數 */
+#intro { --sword-dur: 1250ms; --word-dur: 900ms; }
+#fx { --drop-fall: 900ms; --ripple-dur: 1250ms; --sweep-dur: 1450ms; }
+
+/* ══════════ 無動畫模式 ══════════
+   觸發方式：config.js → motion.enabled = false、網址加 ?calm=1、
+   或網站偵測到卡住／上次載入沒完成時自動啟用。
+   把所有元素直接摆在最終狀態，舊電腦不會因為動畫而假死。      */
+body.xx-calm, body.xx-calm *, body.xx-calm *::before, body.xx-calm *::after {
+  animation-duration: 1ms !important;
+  animation-delay: 0ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 1ms !important;
+  scroll-behavior: auto !important;
+}
+body.xx-calm .wch, body.xx-calm .intro-sub, body.xx-calm .fx-glyph,
+body.xx-calm .fx-name, body.xx-calm .fx-tag, body.xx-calm .fx-drop,
+body.xx-calm .ripple, body.xx-calm .set-card, body.xx-calm .post {
+  opacity: 1 !important;
+  transform: none !important;
+}
+body.xx-calm .intro-sword, body.xx-calm .sword-spark, body.xx-calm .intro-slash,
+body.xx-calm #bg-canvas, body.xx-calm #fx-canvas { display: none !important; }
+body.xx-calm #fx { background: transparent !important; }
+body.xx-calm .tap-ripple { display: none !important; }
+
