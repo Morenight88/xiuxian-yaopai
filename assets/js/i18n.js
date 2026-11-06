@@ -6,9 +6,9 @@ window.XX_I18N = {
 
   zh: {
     'app.brand': '修仙也要拍',
-    'app.tagline': '修仙不誤拍片 · 雲端影片粉絲專頁',
+    'app.tagline': '青羽門最讚',
 
-    'intro.sub': '劍氣橫空 · 影影不絕',
+    'intro.sub': '小師姐想追劇 · 師尊想當網美',
     'intro.skip': '點擊任意處跳過',
 
     'lang.title': '選擇語言',
@@ -17,7 +17,7 @@ window.XX_I18N = {
     'lang.enHint': 'Once chosen, the whole site stays in English',
     'lang.note': '之後也可以在「設定」裡更換語言。',
 
-    'account.sideText': '加入仙友行列，一起追更《修仙也要拍》的影片、留言與按讚。',
+    'account.sideText': '加入仙友行列，一起看看《修仙也要拍》的日常。',
     'account.f1t': '雲端帳號',
     'account.f1d': '名稱與密碼存成 Drive 文字檔',
     'account.f2t': '角色過場',
@@ -166,10 +166,10 @@ window.XX_I18N = {
     'settings.danger': '帳號安全',
     'settings.plainNote': '帳號文字檔中的密碼以 SHA-256 雜湊儲存。',
 
-    'suggest.placeholder': '想對《修仙也要拍》說的話（僅限文字）…',
+    'suggest.placeholder': '想對《修仙也要拍》說的話（僅限文字，而且只有小師弟會看）…',
     'suggest.submit': '送出建議',
     'suggest.sending': '傳送中…',
-    'suggest.done': '建議已存入雲端文字檔，感謝你！',
+    'suggest.done': '建議已存入小師弟的日記，感謝你！',
     'suggest.need': '請輸入建議內容。',
     'suggest.history': '你送出的建議',
     'suggest.empty': '還沒有送出過建議',
@@ -186,7 +186,7 @@ window.XX_I18N = {
     'err.badCredentials': '帳號或密碼錯誤。',
     'err.notSignedIn': '登入已失效，請重新登入。',
     'err.notAdmin': '只有管理員可以使用這個功能。',
-    'err.network': '連不到雲端，請檢查網路或後端網址。',
+    'err.network': '連不上青羽門平台，請檢查網路或者去找小師弟。',
     'err.timeout': '雲端連線逾時。',
     'err.fileOrigin': '直接開啟 index.html 無法連接 Google 雲端（瀏覽器會擋掉要求）。請雙擊 start-site.bat，用 http://localhost:8123 開啟；或把網站放上 https。',
     'rescue.q': '卡住了嗎？',
@@ -404,7 +404,7 @@ window.XX_I18N = {
     'err.badCredentials': 'Wrong name or password.',
     'err.notSignedIn': 'Your session expired — please sign in again.',
     'err.notAdmin': 'Only the admin can use this.',
-    'err.network': 'Cannot reach the cloud. Check your network or the backend URL.',
+    'err.network': 'Cannot reach Qingyu Gate Platform. Check your connection, or go find Little Disciple.',
     'err.timeout': 'The cloud request timed out.',
     'err.fileOrigin': 'Opening index.html directly cannot reach Google Cloud (the browser blocks the requests). Double-click start-site.bat and open http://localhost:8123, or host the site over https.',
     'rescue.q': 'Stuck?',
